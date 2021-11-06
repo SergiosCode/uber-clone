@@ -5,7 +5,7 @@ import tw from "tailwind-styled-components";
 import mapboxgl from "!mapbox-gl";
 import Map from "./components/Map";
 import Link from "next/link";
-import Search from "./Search";
+import search from "./search";
 
 export default function Home() {
   return (
@@ -20,7 +20,7 @@ export default function Home() {
           </Profile>
         </Header>
         <ActionButtons>
-          <Link href="/Search">
+          <Link href="/search">
             <ActionButton>
               <ActionButtonImage src="https://i.ibb.co/cyvcpfF/uberx.png" />
               Ride
