@@ -1,13 +1,33 @@
 import Head from "next/head";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "tailwindcss/tailwind.css";
 import tw from "tailwind-styled-components";
 import mapboxgl from "!mapbox-gl";
 import Map from "./components/Map";
 import Link from "next/link";
 import search from "./search";
+import { auth } from "../firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    return onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser({
+          name: user.displayName,
+          photoURL: user.photoURL,
+        });
+      } else {
+        setUser(null);
+        router.push("/login");
+      }
+    });
+  }, []);
+
   return (
     <Wrapper>
       <Map />
@@ -15,8 +35,8 @@ export default function Home() {
         <Header>
           <UberLogo src="https://i.ibb.co/84stgjq/uber-technologies-new-20218114.jpg" />
           <Profile>
-            <Name>Sergio Val</Name>
-            <UserImage src="https://www.thewrap.com/wp-content/uploads/2017/11/maxresdefault.jpg" />
+            <Name>{user && user.name}</Name>
+            <UserImage src={user && user.photoURL} onClick={() => signOut(auth)} />
           </Profile>
         </Header>
         <ActionButtons>
@@ -61,13 +81,13 @@ const Name = tw.div`
 mr-4 w-20 text-sm
 `;
 const UserImage = tw.img`
-h-12 w-12 rounded-full border border-gray-200 p-px
+h-12 w-12 rounded-full border border-gray-200 p-px cursor-pointer
 `;
 const ActionButtons = tw.div`
 flex cursor-pointer
 `;
 const ActionButton = tw.div`
-flex bg-gray-200 flex-1 m-1 h-32 items-center flex-col justify-center rounded-lg transform hover:scale-105 transition text-xl
+flex bg-gray-300 flex-1 m-1 h-32 items-center flex-col justify-center rounded-lg transform hover:scale-105 transition text-xl
 `;
 
 const ActionButtonImage = tw.img`
@@ -75,5 +95,5 @@ h-3/5
 `;
 
 const InputButton = tw.div`
-h-20 bg-gray-200 text-2xl p-4 flex items-center mt-8
+h-20 bg-gray-300 text-2xl p-4 flex items-center mt-8
 `;
